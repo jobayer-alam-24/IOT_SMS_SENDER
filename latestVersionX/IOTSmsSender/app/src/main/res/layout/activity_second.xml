@@ -1,0 +1,271 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/second"
+    android:background="#E3F2FD"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="15dp"
+            android:padding="10dp">
+
+            <!-- Lottie Animation -->
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/emergencyAnimation"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                app:lottie_rawRes="@raw/contactus"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Title -->
+            <TextView
+                android:id="@+id/emergencyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Emergency Contacts"
+                android:textSize="24sp"
+                android:textColor="#0D47A1"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Hospital Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/hospitalCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardBackgroundColor="@android:color/white"
+                app:cardElevation="12dp"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <ImageView
+                            android:id="@+id/hospitalIcon"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_hospital"
+                            android:contentDescription="Hospital Icon"
+                            android:padding="4dp"/>
+
+                        <TextView
+                            android:id="@+id/hospitalText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Hospital"
+                            android:textSize="18sp"
+                            android:textColor="#0D47A1"
+                            android:textStyle="bold"
+                            android:paddingStart="12dp"/>
+
+                        <ImageButton
+                            android:id="@+id/hospitalCall"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginRight="10dp"
+                            android:background="@drawable/call_button_bg"
+                            android:src="@android:drawable/ic_menu_call"
+                            app:tint="#0D47A1"
+                            android:contentDescription="Call Hospital"/>
+
+                        <ImageButton
+                            android:id="@+id/gpsButton1"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:srcCompat="@drawable/gps"
+                            app:tint="@null"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="GPS Icon" />
+
+                    </LinearLayout>
+
+                    <!-- WebView for nearest hospital -->
+                    <WebView
+                        android:id="@+id/hospitalMapWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        tools:ignore="WebViewLayout" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Fire Station Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/fireStationCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <ImageView
+                            android:id="@+id/fireIcon"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_fire"
+                            android:contentDescription="Fire Station Icon"
+                            android:padding="4dp"/>
+
+                        <TextView
+                            android:id="@+id/fireStationText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Fire Station"
+                            android:textSize="18sp"
+                            android:textColor="#D32F2F"
+                            android:textStyle="bold"
+                            android:paddingStart="12dp"/>
+
+                        <ImageButton
+                            android:id="@+id/fireStationCall"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/call_button_bg"
+                            android:src="@android:drawable/ic_menu_call"
+                            android:layout_marginRight="10dp"
+                            app:tint="#D32F2F"
+                            android:contentDescription="Call Fire Station"/>
+
+                        <ImageButton
+                            android:id="@+id/gpsButton2"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:srcCompat="@drawable/gps"
+                            app:tint="@null"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="GPS Icon" />
+
+                    </LinearLayout>
+
+                    <!-- WebView for nearest fire station -->
+                    <WebView
+                        android:id="@+id/fireMapWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        tools:ignore="WebViewLayout"/>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Ambulance Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/ambulanceCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="12dp"
+                app:cardBackgroundColor="@android:color/white"
+                android:layout_marginBottom="20dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_marginBottom="12dp">
+
+                        <ImageView
+                            android:id="@+id/ambulanceIcon"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:src="@drawable/ic_ambulance"
+                            android:contentDescription="Ambulance Icon"
+                            android:padding="4dp"/>
+
+                        <TextView
+                            android:id="@+id/ambulanceText"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Ambulance"
+                            android:textSize="18sp"
+                            android:textColor="#388E3C"
+                            android:textStyle="bold"
+                            android:paddingStart="12dp"/>
+
+                        <ImageButton
+                            android:id="@+id/ambulanceCall"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/call_button_bg"
+                            android:src="@android:drawable/ic_menu_call"
+                            app:tint="#388E3C"
+                            android:layout_marginRight="10dp"
+                            android:contentDescription="Call Ambulance"/>
+
+                        <ImageButton
+                            android:id="@+id/gpsButton3"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="?attr/selectableItemBackgroundBorderless"
+                            app:srcCompat="@drawable/gps"
+                            app:tint="@null"
+                            android:scaleType="fitCenter"
+                            android:contentDescription="GPS Icon" />
+
+                    </LinearLayout>
+
+                    <!-- WebView for nearest ambulance -->
+                    <WebView
+                        android:id="@+id/ambulanceMapWebView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        tools:ignore="WebViewLayout"/>
+
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
+
+    </RelativeLayout>
+</ScrollView>

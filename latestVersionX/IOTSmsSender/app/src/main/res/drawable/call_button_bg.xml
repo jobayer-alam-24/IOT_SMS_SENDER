@@ -1,0 +1,13 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+
+    <!-- Circle background color: light grey like Google Maps -->
+    <solid android:color="#ECECEC"/>
+
+    <!-- Optional padding inside the circle -->
+    <padding
+        android:top="8dp"
+        android:bottom="8dp"
+        android:left="8dp"
+        android:right="8dp"/>
+</shape>
