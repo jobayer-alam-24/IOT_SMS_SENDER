@@ -6,7 +6,9 @@
         android:name="android.hardware.telephony"
         android:required="false" />
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- For Android 12+ -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
@@ -26,6 +28,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IOTSmsSender">
+        <activity
+            android:name=".LogInfoActivity"
+            android:exported="false" />
         <activity
             android:name=".TeamActivity"
             android:exported="false" />

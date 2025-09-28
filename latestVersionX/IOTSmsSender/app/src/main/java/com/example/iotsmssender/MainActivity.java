@@ -5,12 +5,17 @@ import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -27,9 +32,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import com.android.volley.Request;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 
 import java.io.InputStream;
@@ -43,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String DEVICE_ADDRESS = "00:22:06:01:11:77"; // HC-06 MAC
     private static final int SMS_PERMISSION_CODE = 1;
     private static final int BLUETOOTH_PERMISSION_CODE = 2;
+    private static final int PICK_CONTACT = 102;
+    private static final int REQ_CONTACT_PERMISSION = 103;
     private static final int MAX_SMS_PER_ALERT = 5; // max messages per alert type
 
     private BluetoothSocket socket;
@@ -50,7 +62,9 @@ public class MainActivity extends AppCompatActivity {
     private InputStream inputStream;
     private EditText targetNumberInput;
     private Button startButton;
+    private ImageView pickContactButton;
     private String targetNumber = "";
+    DBHelper dbHelper = new DBHelper(this);
 
 
     private final Map<String, Integer> alertCount = new HashMap<>();
@@ -59,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new DBHelper(this);
         Button moreOptionsButton = findViewById(R.id.moreOptionsButton);
         TextView teamLink = findViewById(R.id.teamMembersLink);
         moreOptionsButton.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         // UI elements
         targetNumberInput = findViewById(R.id.targetNumberInput);
         startButton = findViewById(R.id.startButton);
-        ImageView gifImage = findViewById(R.id.gifImage);
+        pickContactButton = findViewById(R.id.pickContactButton);
         progressBar = findViewById(R.id.progressBar);
         teamLink.setPaintFlags(teamLink.getPaintFlags() | Paint.UNDERLINE_TEXT_FLAG);
         teamLink.setOnClickListener(new View.OnClickListener() {
@@ -80,14 +95,25 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button logInfoButton = findViewById(R.id.logInfoButton);
+        logInfoButton.setOnClickListener(v -> {
+            startActivity(new Intent(MainActivity.this, LogInfoActivity.class));
+        });
 
-        // Load GIF
-        Glide.with(this).asGif().load(R.raw.fire).into(gifImage);
 
 
         // Request SMS & Bluetooth permissions
         requestAllPermissions();
-
+        pickContactButton.setOnClickListener(v -> {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS},
+                        REQ_CONTACT_PERMISSION);
+            } else {
+                openContactPicker();
+            }
+        });
         // Start button click
         startButton.setOnClickListener(v -> {
             String userInput = targetNumberInput.getText().toString().trim();
@@ -134,7 +160,42 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{Manifest.permission.BLUETOOTH_SCAN, Manifest.permission.BLUETOOTH_CONNECT},
                 BLUETOOTH_PERMISSION_CODE);
     }
+    private void openContactPicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI);
+        startActivityForResult(intent, PICK_CONTACT);
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == PICK_CONTACT && resultCode == RESULT_OK && data != null) {
+            Uri contactUri = data.getData();
+            Cursor cursor = getContentResolver().query(contactUri,
+                    new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                    null, null, null);
+
+            if (cursor != null && cursor.moveToFirst()) {
+                String number = cursor.getString(0);
+                cursor.close();
+
+                // Clean up number (remove spaces, dashes)
+                number = number.replaceAll("\\s+", "").replaceAll("-", "");
+
+                // Set into EditText
+                targetNumberInput.setText(number);
+
+                // Format with +88 if needed
+                if (number.startsWith("0")) {
+                    targetNumber = "+88" + number;
+                } else {
+                    targetNumber = number;
+                }
+
+                Log.d(TAG, "Picked contact number: " + targetNumber);
+                Toast.makeText(this, "Contact selected!", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
     // Connect Bluetooth
     @SuppressLint("MissingPermission")
     private void connectBluetooth() {
@@ -239,6 +300,7 @@ public class MainActivity extends AppCompatActivity {
                             } else {
                                 Log.d(TAG, alertType + " SMS limit reached, skipping.");
                             }
+                            storeDetectionInDB(alertType);
                         }
                     }
                 }
@@ -247,6 +309,14 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+    private void storeDetectionInDB(String alertType) {
+        if (alertType == null || alertType.isEmpty()) return;
+        dbHelper.insertDetection(alertType);
+        Toast.makeText(this, "Detection stored locally", Toast.LENGTH_SHORT).show();
+        Log.d(TAG, "Detection stored: " + alertType);
+    }
+
+
 
     // Send SMS
     private void sendSMS(String text) {
@@ -284,6 +354,12 @@ public class MainActivity extends AppCompatActivity {
                 connectBluetooth();
             } else {
                 Log.e(TAG, "Bluetooth permission denied");
+            }
+        }else if (requestCode == REQ_CONTACT_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                openContactPicker();
+            } else {
+                Toast.makeText(this, "Contacts permission is required", Toast.LENGTH_SHORT).show();
             }
         }
     }

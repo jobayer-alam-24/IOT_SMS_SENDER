@@ -1,0 +1,33 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Light shadow (top-left) -->
+    <item android:top="3dp" android:left="3dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#FFFFFF"
+                android:endColor="#F8BBD0"
+                android:angle="315"/>
+            <corners android:radius="20dp"/>
+        </shape>
+    </item>
+
+    <!-- Dark shadow (bottom-right) -->
+    <item android:bottom="3dp" android:right="3dp">
+        <shape android:shape="rectangle">
+            <gradient
+                android:startColor="#F8BBD0"
+                android:endColor="#D81B60"
+                android:angle="135"/>
+            <corners android:radius="20dp"/>
+        </shape>
+    </item>
+
+    <!-- Main surface -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#F8BBD0"/>
+            <corners android:radius="20dp"/>
+        </shape>
+    </item>
+
+</layer-list>
