@@ -1,0 +1,27 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="8dp">
+
+    <TextView
+        android:id="@+id/answerText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:background="@drawable/bg_answer_bubble"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textSize="15sp"/>
+
+    <ImageView
+        android:id="@+id/speakerIcon"
+        android:layout_width="28dp"
+        android:layout_height="28dp"
+        android:layout_marginStart="6dp"
+        android:src="@drawable/mic"
+        android:contentDescription="Speaker"/>
+
+</LinearLayout>

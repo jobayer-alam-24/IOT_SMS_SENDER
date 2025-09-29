@@ -2,6 +2,9 @@ package com.example.iotsmssender;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -14,7 +17,9 @@ import android.graphics.Paint;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.telephony.SmsManager;
 import android.text.SpannableString;
@@ -34,7 +39,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 
 import com.android.volley.Request;
@@ -58,11 +66,13 @@ public class MainActivity extends AppCompatActivity {
     private static final int MAX_SMS_PER_ALERT = 5; // max messages per alert type
 
     private BluetoothSocket socket;
+    private boolean robotShown = false;
     private ProgressBar progressBar;
     private InputStream inputStream;
     private EditText targetNumberInput;
     private Button startButton;
     private ImageView pickContactButton;
+    private TextView robotButton;
     private String targetNumber = "";
     DBHelper dbHelper = new DBHelper(this);
 
@@ -74,6 +84,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHelper = new DBHelper(this);
+        robotButton = findViewById(R.id.robotButton);
+        robotButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Open ChatActivity
+                Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                startActivity(intent);
+            }
+        });
+        new Handler().postDelayed(() -> {
+            if (!robotShown) {
+                robotButton.setVisibility(View.VISIBLE);
+                robotButton.setTranslationX(-500f);
+                robotButton.animate()
+                        .translationX(0f)
+                        .setDuration(800)
+                        .start();
+                robotShown = true; // mark as shown
+            }
+        }, 3000);
         Button moreOptionsButton = findViewById(R.id.moreOptionsButton);
         TextView teamLink = findViewById(R.id.teamMembersLink);
         moreOptionsButton.setOnClickListener(new View.OnClickListener() {
