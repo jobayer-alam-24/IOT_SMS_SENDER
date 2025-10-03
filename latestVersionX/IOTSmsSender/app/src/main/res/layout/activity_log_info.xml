@@ -8,15 +8,32 @@
     android:layout_height="match_parent"
     tools:context=".LogInfoActivity">
 
+    <!-- Fixed top button -->
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnHistory"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Detection History"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp"
+        android:backgroundTint="#E91E63"
+        android:layout_margin="16dp"
+        android:padding="12dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- RecyclerView below button -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewLogs"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnHistory"
+        app:layout_constraintBottom_toTopOf="@id/backBtn"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
+    <!-- "No Logs" text in the middle -->
     <TextView
         android:id="@+id/tvNoLogs"
         android:layout_width="wrap_content"
@@ -31,6 +48,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:gravity="center"/>
 
+    <!-- Back button at bottom -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/backBtn"
         android:layout_width="0dp"
@@ -45,6 +63,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_margin="16dp"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

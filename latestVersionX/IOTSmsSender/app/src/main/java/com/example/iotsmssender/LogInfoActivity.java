@@ -7,16 +7,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import java.util.List;
-import java.util.Map;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class LogInfoActivity extends AppCompatActivity {
@@ -42,12 +44,14 @@ public class LogInfoActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         tvNoLogs = findViewById(R.id.tvNoLogs);
         backBtn = findViewById(R.id.backBtn);
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LogInfoActivity.this, MainActivity.class));
             }
         });
+
         List<Map<String, String>> logs = dbHelper.fetchDetections();
 
         if (logs.isEmpty()) {
@@ -57,22 +61,17 @@ public class LogInfoActivity extends AppCompatActivity {
             tvNoLogs.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
-            recyclerView.setAdapter(new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+            recyclerView.setAdapter(new RecyclerView.Adapter<LogViewHolder>() {
                 @Override
-                public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                public LogViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
                     View view = LayoutInflater.from(parent.getContext())
                             .inflate(R.layout.item_log, parent, false);
-                    return new RecyclerView.ViewHolder(view) {};
+                    return new LogViewHolder(view);
                 }
 
                 @Override
-                public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+                public void onBindViewHolder(LogViewHolder holder, int position) {
                     Map<String, String> log = logs.get(position);
-                    View itemView = holder.itemView;
-
-                    TextView tvType = itemView.findViewById(R.id.tvDetectionType);
-                    TextView tvDate = itemView.findViewById(R.id.tvDate);
-                    TextView tvTime = itemView.findViewById(R.id.tvTime);
 
                     String type = log.get("type");
                     String date = log.get("date");
@@ -87,25 +86,26 @@ public class LogInfoActivity extends AppCompatActivity {
                         sdfBD.setTimeZone(TimeZone.getTimeZone("Asia/Dhaka"));
                         String bdTime = sdfBD.format(parsedTime);
 
-                        tvTime.setText(bdTime);
+                        holder.tvTime.setText(bdTime);
                     } catch (Exception e) {
-                        tvTime.setText(timeFromDB);
+                        holder.tvTime.setText(timeFromDB);
                     }
-                    tvType.setText(type + " DETECTED");
-                    tvDate.setText(date);
+
+                    holder.tvType.setText(type + " DETECTED");
+                    holder.tvDate.setText(date);
 
                     switch (type) {
                         case "DANGER":
-                            tvType.setTextColor(0xFFFF0000);
+                            holder.tvType.setTextColor(0xFFFF0000);
                             break;
                         case "MORE DANGER":
-                            tvType.setTextColor(0xFFFFA500);
+                            holder.tvType.setTextColor(0xFFFFA500);
                             break;
                         case "WARNING":
-                            tvType.setTextColor(0xFFFFFF00);
+                            holder.tvType.setTextColor(0xFFFFFF00);
                             break;
                         default:
-                            tvType.setTextColor(0xFF333333);
+                            holder.tvType.setTextColor(0xFF333333);
                     }
                 }
 
@@ -114,6 +114,18 @@ public class LogInfoActivity extends AppCompatActivity {
                     return logs.size();
                 }
             });
+        }
+    }
+
+    // ViewHolder class
+    private static class LogViewHolder extends RecyclerView.ViewHolder {
+        TextView tvType, tvDate, tvTime;
+
+        LogViewHolder(View itemView) {
+            super(itemView);
+            tvType = itemView.findViewById(R.id.tvDetectionType);
+            tvDate = itemView.findViewById(R.id.tvDate);
+            tvTime = itemView.findViewById(R.id.tvTime);
         }
     }
 }
