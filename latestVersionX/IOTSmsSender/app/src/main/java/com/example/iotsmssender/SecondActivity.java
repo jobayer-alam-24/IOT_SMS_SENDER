@@ -8,6 +8,7 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ public class SecondActivity extends AppCompatActivity {
     private Button backBtn;
     private ImageButton hospitalCard, fireStationCard, ambulanceCard;
     private ImageButton hospitalCall, fireStationCall, ambulanceCall;
+    private ImageView fireIcon;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class SecondActivity extends AppCompatActivity {
         fireStationCard = findViewById(R.id.gpsButton2);
         ambulanceCard = findViewById(R.id.gpsButton3);
         backBtn = findViewById(R.id.backBtn);
+        fireIcon = findViewById(R.id.fireIcon);
 
         // Initialize Call Buttons
         hospitalCall = findViewById(R.id.hospitalCall);
@@ -47,6 +50,12 @@ public class SecondActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SecondActivity.this, MainActivity.class));
+            }
+        });
+        fireIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SecondActivity.this, InsertActivity.class));
             }
         });
         // Hospital
