@@ -8,10 +8,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.iotsmssender" />
+                  <option name="mobileSdkAppId" value="1:1076266417293:android:de43f354b8cc3e9fb3b6c4" />
+                  <option name="projectId" value="iotsmssender" />
+                  <option name="projectNumber" value="1076266417293" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

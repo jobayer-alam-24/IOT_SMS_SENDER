@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1076266417293",
+    "project_id": "iotsmssender",
+    "storage_bucket": "iotsmssender.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076266417293:android:de43f354b8cc3e9fb3b6c4",
+        "android_client_info": {
+          "package_name": "com.example.iotsmssender"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkVLJBQX-o-3vCCTE7e-KEXcqzWAvZIck"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -29,6 +29,14 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -51,7 +59,11 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 
 import java.io.InputStream;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -84,6 +96,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         dbHelper = new DBHelper(this);
+        if (hasInternetConnection(this)) {
+            ensureCookieThenSend();
+        }
         robotButton = findViewById(R.id.robotButton);
         robotButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -339,6 +354,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }).start();
     }
+
+    public boolean hasInternetConnection(Context context) {
+        if (context == null) return false;
+
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (cm != null) {
+            NetworkInfo networkInfo = cm.getActiveNetworkInfo();
+            return networkInfo != null && networkInfo.isConnected();
+        }
+        return false;
+    }
     private void storeDetectionInDB(String alertType) {
         if (alertType == null || alertType.isEmpty()) return;
         dbHelper.insertDetection(alertType);
@@ -393,4 +419,146 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    // call this once (e.g., in onCreate or before sending detections)
+    private void ensureCookieThenSend() {
+        // Create hidden WebView
+        WebView webView = new WebView(this);
+        webView.setLayoutParams(new ViewGroup.LayoutParams(1, 1)); // tiny invisible
+        webView.setVisibility(View.INVISIBLE);
+
+        WebSettings ws = webView.getSettings();
+        ws.setJavaScriptEnabled(true);
+        ws.setDomStorageEnabled(true);
+        ws.setUserAgentString("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+
+        // Ensure cookies are enabled for WebView
+        CookieManager cookieManager = CookieManager.getInstance();
+        cookieManager.setAcceptCookie(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            cookieManager.setAcceptThirdPartyCookies(webView, true);
+        }
+
+        webView.setWebViewClient(new WebViewClient() {
+            private boolean cookieObtained = false;
+            private final String domain = "https://jobayer.wuaze.com";
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+
+                // Try read cookie
+                String allCookies = CookieManager.getInstance().getCookie(domain);
+                Log.d("CookieDebug", "onPageFinished url=" + url + " cookies=" + allCookies);
+
+                if (allCookies != null && allCookies.contains("__test")) {
+                    // We have the challenge cookie
+                    if (!cookieObtained) {
+                        cookieObtained = true;
+                        // flush cookies to persistent store (important on some devices)
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                            CookieManager.getInstance().flush();
+                        } else {
+                            CookieSyncManager.getInstance().sync();
+                        }
+
+                        // Now call send with cookie
+                        sendAllDetectionsToServerWithCookie(allCookies);
+
+                        // Destroy the WebView when done
+                        view.postDelayed(() -> {
+                            view.loadUrl("about:blank");
+                            ((ViewGroup) view.getParent()).removeView(view);
+                            view.destroy();
+                        }, 500);
+                    }
+                } else {
+                    // cookie not present yet - the challenge may redirect; load the root again or wait
+                    // You can optionally reload once to allow redirect to complete
+                    Log.d("CookieDebug", "cookie not present yet, reloading root to trigger challenge.");
+                    view.postDelayed(() -> view.loadUrl(domain), 1000);
+                }
+            }
+
+            @Override
+            public void onReceivedError(WebView view, WebResourceRequest req, WebResourceError error) {
+                super.onReceivedError(view, req, error);
+                Log.e("WebViewError", "error: " + error.getDescription());
+            }
+        });
+
+        // Add webView to the activity view hierarchy so JS runs (invisible)
+        ViewGroup root = findViewById(android.R.id.content);
+        root.addView(webView);
+
+        // Kick off loading the domain (the challenge script runs and should set cookie)
+        webView.loadUrl("https://jobayer.wuaze.com/");
+    }
+
+    private void sendAllDetectionsToServerWithCookie(String cookie) {
+        List<Map<String, String>> detections = dbHelper.fetchDetections();
+
+        for (Map<String, String> detection : detections) {
+            String type = detection.get("type");
+            String date = detection.get("date"); // yyyy-MM-dd
+            String time12 = detection.get("time"); // hh:mm a
+
+            // Initialize timestamp
+            String timestamp = date;
+
+            try {
+                java.text.SimpleDateFormat _12HourFormat = new java.text.SimpleDateFormat("hh:mm a", Locale.US);
+                java.text.SimpleDateFormat _24HourFormat = new java.text.SimpleDateFormat("HH:mm:ss", Locale.US);
+
+                java.util.Date parsedTime = _12HourFormat.parse(time12.trim());
+                String time24 = _24HourFormat.format(parsedTime);
+
+                timestamp = date + " " + time24;
+
+                Log.d("TimeConversion", "Original: " + time12 + " -> 24h: " + time24);
+            } catch (Exception e) {
+                e.printStackTrace();
+                timestamp = date + " 00:00:00"; // fallback
+            }
+
+            String finalTimestamp = timestamp;
+            String finalType = type;
+
+            StringRequest stringRequest = new StringRequest(
+                    com.android.volley.Request.Method.POST,
+                    "https://jobayer.wuaze.com/insert_detection.php",
+                    response -> {
+                        Log.d("ServerResponse", response);
+
+                    },
+                    error -> {
+                        Log.e("ServerError", error.toString());
+
+                    }
+            ) {
+                @Override
+                protected Map<String, String> getParams() {
+                    Map<String, String> params = new HashMap<>();
+                    params.put("Type", finalType);
+                    params.put("Timestamp", finalTimestamp);
+                    return params;
+                }
+
+                @Override
+                public Map<String, String> getHeaders() {
+                    Map<String, String> headers = new HashMap<>();
+                    // Browser-like UA
+                    headers.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36");
+                    // Add the cookie received from WebView
+                    if (cookie != null && !cookie.isEmpty()) {
+                        headers.put("Cookie", cookie);
+                    }
+                    return headers;
+                }
+            };
+
+            Volley.newRequestQueue(this).add(stringRequest);
+        }
+    }
+
+
 }
