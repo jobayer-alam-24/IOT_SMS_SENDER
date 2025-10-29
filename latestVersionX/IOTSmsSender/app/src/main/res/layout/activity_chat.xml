@@ -19,6 +19,16 @@
         android:textSize="24sp"
         android:textStyle="bold"
         android:padding="12dp"/>
+    <Switch
+        android:id="@+id/langToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="বাংলা / English"
+        android:checked="false"
+        android:textColor="#C2185B"
+        android:layout_gravity="center_horizontal"
+        android:padding="8dp"/>
+
 
     <!-- RecyclerView takes remaining space -->
     <androidx.recyclerview.widget.RecyclerView

@@ -1,11 +1,14 @@
 package com.example.iotsmssender;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -16,6 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class InsertActivity extends AppCompatActivity {
     private WebView webView;
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,26 +31,17 @@ public class InsertActivity extends AppCompatActivity {
             return insets;
         });
         webView = findViewById(R.id.myWebView);
-
+        button = findViewById(R.id.button);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(InsertActivity.this, MainActivity.class));
+            }
+        });
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
 
         webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public void onReceivedError(WebView view,
-                                        WebResourceRequest request,
-                                        WebResourceError error) {
-                super.onReceivedError(view, request, error);
-
-                // Show a Toast instead of crashing
-                Toast.makeText(InsertActivity.this,
-                        "No Internet Connection!",
-                        Toast.LENGTH_LONG).show();
-
-                // Or load a custom error page
-                webView.loadData("<h3 style='color:red;text-align:center;'>No Internet Connection</h3>",
-                        "text/html", "UTF-8");
-            }
         });
 
         webView.loadUrl("https://jobayer.wuaze.com/upload.php");

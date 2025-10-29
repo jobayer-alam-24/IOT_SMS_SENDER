@@ -58,7 +58,12 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -367,6 +372,36 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.insertDetection(alertType);
         Toast.makeText(this, "Detection stored locally", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Detection stored: " + alertType);
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://jobayer.wuaze.com/insert_detection.php");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setDoOutput(true);
+
+                String postData = "Type=" + alertType;
+
+                OutputStream os = conn.getOutputStream();
+                os.write(postData.getBytes());
+                os.flush();
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                Log.d("PHP_RESPONSE", "Response Code: " + responseCode);
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder response = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) {
+                    response.append(line);
+                }
+                in.close();
+
+                Log.d("PHP_RESPONSE", "Response: " + response.toString());
+            } catch (Exception e) {
+                Log.e("PHP_RESPONSE", "Error sending detection: ", e);
+            }
+        }).start();
     }
 
 
