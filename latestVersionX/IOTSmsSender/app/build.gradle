@@ -49,4 +49,6 @@ dependencies {
     implementation "androidx.credentials:credentials-play-services-auth:1.6.0-beta03"
     implementation "com.google.android.libraries.identity.googleid:googleid:1.1.1"
     implementation("com.google.firebase:firebase-inappmessaging-display")
+    implementation 'com.google.firebase:firebase-database:21.0.0'
+
 }

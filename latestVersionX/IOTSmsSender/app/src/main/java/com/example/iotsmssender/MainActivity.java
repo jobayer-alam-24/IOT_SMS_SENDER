@@ -66,6 +66,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -418,6 +420,19 @@ public class MainActivity extends AppCompatActivity {
         dbHelper.insertDetection(alertType);
         Toast.makeText(this, "Detection stored locally", Toast.LENGTH_SHORT).show();
         Log.d(TAG, "Detection stored: " + alertType);
+        try {
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference ref = database.getReference("detections");
+
+            String id = ref.push().getKey();
+            Detection detection = new Detection(alertType, System.currentTimeMillis());
+
+            ref.child(id).setValue(detection)
+                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Detection sent to Firebase"))
+                    .addOnFailureListener(e -> Log.e(TAG, "Firebase Error", e));
+        } catch (Exception e) {
+            Log.e(TAG, "Firebase store failed", e);
+        }
         new Thread(() -> {
             try {
                 URL url = new URL("https://jobayer.wuaze.com/insert_detection.php");
