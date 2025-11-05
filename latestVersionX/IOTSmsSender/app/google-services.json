@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "1076266417293",
-    "project_id": "iotsmssender",
-    "storage_bucket": "iotsmssender.firebasestorage.app"
+    "project_number": "1040458988465",
+    "project_id": "iot-sms-sender",
+    "storage_bucket": "iot-sms-sender.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1076266417293:android:de43f354b8cc3e9fb3b6c4",
+        "mobilesdk_app_id": "1:1040458988465:android:ff6e43fbfc4669e0461b90",
         "android_client_info": {
           "package_name": "com.example.iotsmssender"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1040458988465-crmc1ji9fql1uop9gv2r5o1toatikiut.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCkVLJBQX-o-3vCCTE7e-KEXcqzWAvZIck"
+          "current_key": "AIzaSyBgx35TZIrSdSpz3p5ult6mFVUorboM5oY"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1040458988465-crmc1ji9fql1uop9gv2r5o1toatikiut.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

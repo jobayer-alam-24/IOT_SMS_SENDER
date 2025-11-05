@@ -52,11 +52,20 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
+import androidx.credentials.CreateCredentialResponse;
+import androidx.credentials.CredentialManager;
+import androidx.credentials.CredentialManagerCallback;
+import androidx.credentials.GetCredentialRequest;
+import androidx.credentials.GetCredentialResponse;
+import androidx.credentials.exceptions.CreateCredentialException;
+import androidx.credentials.exceptions.GetCredentialException;
 
 import com.android.volley.Request;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.libraries.identity.googleid.GetSignInWithGoogleOption;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -91,7 +100,11 @@ public class MainActivity extends AppCompatActivity {
     private ImageView pickContactButton;
     private TextView robotButton;
     private String targetNumber = "";
-    DBHelper dbHelper = new DBHelper(this);
+
+    private CredentialManager credentialManager;
+    private GetCredentialRequest request;
+    SignInButton googleSignInButton;
+    DBHelper dbHelper;
 
 
     private final Map<String, Integer> alertCount = new HashMap<>();
@@ -100,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        dbHelper = new DBHelper(this);
+        googleSignInButton = findViewById(R.id.googleSignInButton);
+        credentialManager = CredentialManager.create(this);
+        GetSignInWithGoogleOption googleOption = new GetSignInWithGoogleOption.Builder(getString(R.string.server_client_id))
+                .setNonce(java.util.UUID.randomUUID().toString())
+                .build();
+        request = new GetCredentialRequest.Builder()
+                .addCredentialOption(googleOption)
+                .build();
+
+
+
         dbHelper = new DBHelper(this);
         robotButton = findViewById(R.id.robotButton);
         robotButton.setOnClickListener(new View.OnClickListener() {
@@ -127,6 +152,12 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(MainActivity.this, SecondActivity.class));
+            }
+        });
+        googleSignInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                requestGoogleLogin();
             }
         });
         // UI elements
@@ -192,6 +223,21 @@ public class MainActivity extends AppCompatActivity {
                     BLUETOOTH_PERMISSION_CODE);
         }
     }
+    private void requestGoogleLogin()
+    {
+        credentialManager.getCredentialAsync(this, request, null, Runnable::run, new CredentialManagerCallback<GetCredentialResponse, GetCredentialException>() {
+            @Override
+            public void onResult(GetCredentialResponse getCredentialResponse) {
+                Toast.makeText(MainActivity.this, "Logged in!", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(@NonNull GetCredentialException e) {
+
+            }
+        });
+
+    };
 
     private boolean hasSmsPermission() {
         return ActivityCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED;

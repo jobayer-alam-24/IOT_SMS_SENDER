@@ -9,9 +9,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.example.iotsmssender" />
-                  <option name="mobileSdkAppId" value="1:1076266417293:android:de43f354b8cc3e9fb3b6c4" />
-                  <option name="projectId" value="iotsmssender" />
-                  <option name="projectNumber" value="1076266417293" />
+                  <option name="mobileSdkAppId" value="1:1040458988465:android:ff6e43fbfc4669e0461b90" />
+                  <option name="projectId" value="iot-sms-sender" />
+                  <option name="projectNumber" value="1040458988465" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
