@@ -233,7 +233,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(@NonNull GetCredentialException e) {
-
+                Toast.makeText(MainActivity.this, "Check Your Internet Connection!", Toast.LENGTH_SHORT).show();
             }
         });
 
