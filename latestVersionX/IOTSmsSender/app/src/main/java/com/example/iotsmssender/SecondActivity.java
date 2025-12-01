@@ -19,7 +19,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class SecondActivity extends AppCompatActivity {
     private Button backBtn;
-    private ImageButton hospitalCard, fireStationCard, ambulanceCard;
+    private ImageButton hospitalCard, fireStationCard, ambulanceCard, waterCard;
     private ImageButton hospitalCall, fireStationCall, ambulanceCall;
     private ImageView fireIcon;
     @Override
@@ -38,6 +38,8 @@ public class SecondActivity extends AppCompatActivity {
         ambulanceCard = findViewById(R.id.gpsButton3);
         backBtn = findViewById(R.id.backBtn);
         fireIcon = findViewById(R.id.fireIcon);
+        waterCard = findViewById(R.id.gpsButton4);
+
 
         // Initialize Call Buttons
         hospitalCall = findViewById(R.id.hospitalCall);
@@ -62,6 +64,14 @@ public class SecondActivity extends AppCompatActivity {
         hospitalCard.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("geo:23.8103,90.4125?q=hospital+near+me"));
+            intent.setPackage("com.google.android.apps.maps");
+            startActivity(intent);
+        });
+        //water
+        // Water Source
+        waterCard.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("geo:23.8130,90.4140?q=(water+source)|(water+hydrant)|(pond)|(lake)|(firefighting+water)+near+me"));
             intent.setPackage("com.google.android.apps.maps");
             startActivity(intent);
         });
